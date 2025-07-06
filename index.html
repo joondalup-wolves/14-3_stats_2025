@@ -749,7 +749,6 @@
     <div class="nav-menu">
       <button class="menu-btn" id="menuToggle">☰</button>
       <div class="menu-content" id="menuContent">
-        <a href="#" class="menu-item" data-view="roster">Roster</a>
         <a href="#" class="menu-item" data-view="boxscores">Boxscores</a>
         <a href="#" class="menu-item" data-view="averages-table">Averages (Table)</a>
         <a href="#" class="menu-item" data-view="averages-radar">Averages (Radar)</a>
@@ -758,11 +757,7 @@
     </div>
   </div>
 
-  <div id="view-roster" class="main-view">
-    <div id="players-container-roster">
-      <div class="loading">Loading player data...</div>
-    </div>
-  </div>
+
   <div id="view-boxscores" class="main-view">
     <div id="gameHeader"></div>
     <div class="boxscore-container" id="boxscore">
@@ -980,185 +975,7 @@
         showView(this.dataset.view);
       });
     });
-    // --- ROSTER JS ---
-    (function() {
-      const gameCsvUrls = {
-        1: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTx_Gj_jt5i_wvL07zSs48DPlE_CkkP49G6EnhYcLKKH3tJvn0r9pEOrIySkkc6TJ1dyGHSA2a5GbW7/pub?gid=797304496&single=true&output=csv",
-        2: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTx_Gj_jt5i_wvL07zSs48DPlE_CkkP49G6EnhYcLKKH3tJvn0r9pEOrIySkkc6TJ1dyGHSA2a5GbW7/pub?gid=1379588754&single=true&output=csv",
-        3: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTx_Gj_jt5i_wvL07zSs48DPlE_CkkP49G6EnhYcLKKH3tJvn0r9pEOrIySkkc6TJ1dyGHSA2a5GbW7/pub?gid=1722787100&single=true&output=csv",
-        4: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTx_Gj_jt5i_wvL07zSs48DPlE_CkkP49G6EnhYcLKKH3tJvn0r9pEOrIySkkc6TJ1dyGHSA2a5GbW7/pub?gid=0&single=true&output=csv",
-        5: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTx_Gj_jt5i_wvL07zSs48DPlE_CkkP49G6EnhYcLKKH3tJvn0r9pEOrIySkkc6TJ1dyGHSA2a5GbW7/pub?gid=1748576796&single=true&output=csv",
-        6: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTx_Gj_jt5i_wvL07zSs48DPlE_CkkP49G6EnhYcLKKH3tJvn0r9pEOrIySkkc6TJ1dyGHSA2a5GbW7/pub?gid=2013793463&single=true&output=csv",
-        7: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTx_Gj_jt5i_wvL07zSs48DPlE_CkkP49G6EnhYcLKKH3tJvn0r9pEOrIySkkc6TJ1dyGHSA2a5GbW7/pub?gid=488403667&single=true&output=csv",
-        8: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTx_Gj_jt5i_wvL07zSs48DPlE_CkkP49G6EnhYcLKKH3tJvn0r9pEOrIySkkc6TJ1dyGHSA2a5GbW7/pub?gid=1640243385&single=true&output=csv",
-	9: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTx_Gj_jt5i_wvL07zSs48DPlE_CkkP49G6EnhYcLKKH3tJvn0r9pEOrIySkkc6TJ1dyGHSA2a5GbW7/pub?gid=690207392&single=true&output=csv",
-        10: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTx_Gj_jt5i_wvL07zSs48DPlE_CkkP49G6EnhYcLKKH3tJvn0r9pEOrIySkkc6TJ1dyGHSA2a5GbW7/pub?gid=185294638&single=true&output=csv",
-	11: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTx_Gj_jt5i_wvL07zSs48DPlE_CkkP49G6EnhYcLKKH3tJvn0r9pEOrIySkkc6TJ1dyGHSA2a5GbW7/pub?gid=390013824&single=true&output=csv"      
-      };
-      const averagesCsvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTx_Gj_jt5i_wvL07zSs48DPlE_CkkP49G6EnhYcLKKH3tJvn0r9pEOrIySkkc6TJ1dyGHSA2a5GbW7/pub?gid=711431833&single=true&output=csv";
-      function parseCsv(text) { return text.trim().split('\n').map(row => row.split(',')); }
-      function isDNP(stats) { return stats && stats[2] && stats[2].includes('DNP'); }
-      function formatOpponent(opponent) {
-        if (!opponent) return '';
-        if (opponent.includes('Slammers(Blue)')) return 'SWS(Blue)';
-        if (opponent.includes('Slammers(Red)')) return 'SWS(Red)';
-        const words = opponent.trim().split(' ');
-        return words[words.length - 1];
-      }
-      function createPlayerCard(playerData, rowNumber, allGameStats) {
-        const playerId = rowNumber - 2;
-        let gameStatsRows = '';
-        allGameStats.forEach(game => {
-          const { round, opponent, playerStats, unavailable } = game;
-          const formattedOpponent = formatOpponent(opponent);
-          if (unavailable) {
-            gameStatsRows += `
-              <tr>
-                <td>${round || ''}</td>
-                <td>${formattedOpponent || ''}</td>
-                <td colspan="7" class="unavailable-cell">Game data unavailable</td>
-              </tr>
-            `;
-          } else if (isDNP(playerStats)) {
-            const dnpReason = playerStats[2] || 'DNP';
-            gameStatsRows += `
-              <tr>
-                <td>${round}</td>
-                <td>${formattedOpponent}</td>
-                <td colspan="7" class="dnp-cell">${dnpReason}</td>
-              </tr>
-            `;
-          } else {
-            gameStatsRows += `
-              <tr>
-                <td>${round}</td>
-                <td>${formattedOpponent}</td>
-                <td>${playerStats[2] || '0'}</td>
-                <td>${playerStats[5] || '0'}</td>
-                <td>${playerStats[6] || '0'}</td>
-                <td>${playerStats[7] || '0'}</td>
-                <td>${playerStats[8] || '0'}</td>
-                <td>${playerStats[13] || '0%'}</td>
-                <td>${playerStats[19] || '0%'}</td>
-              </tr>
-            `;
-          }
-        });
-        return `
-          <div class="player-container">
-            <div class="player-card">
-              <div class="player-header">
-                <div class="player-info">
-                  <h1 class="player-name"><span class="player-number">${playerData[0]}</span>${playerData[1]}</h1>
-                  <div class="stats-buttons">
-                    <button class="stat-button">
-                      <span>${playerData[3] || '0.0'}</span>
-                      <span>PTS</span>
-                    </button>
-                    <button class="stat-button">
-                      <span>${playerData[6] || '0.0'}</span>
-                      <span>REB</span>
-                    </button>
-                    <button class="stat-button">
-                      <span>${playerData[7] || '0.0'}</span>
-                      <span>AST</span>
-                    </button>
-                    <button class="stat-button">
-                      <span>${playerData[8] || '0.0'}</span>
-                      <span>STL</span>
-                    </button>
-                    <button class="stat-button">
-                      <span>${playerData[9] || '0.0'}</span>
-                      <span>BLK</span>
-                    </button>
-                  </div>
-                  <a class="stats-toggle" id="statsToggle${playerId}">VIEW GAME STATS ▼</a>
-                </div>
-              </div>
-              <div class="stats-container" id="statsContainer${playerId}">
-                <div class="stats-section games-table">
-                  <h3 class="stats-title">WABL 2025 Games</h3>
-                  <table class="stats-table">
-                    <thead>
-                      <tr>
-                        <th>R</th><th>OPP</th><th>PTS</th><th>REB</th><th>AST</th><th>STL</th><th>BLK</th><th>FG%</th><th>FT%</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      ${gameStatsRows}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          </div>
-        `;
-      }
-      function setupStatsToggle(toggleId, containerId) {
-        const statsToggle = document.getElementById(toggleId);
-        const statsContainer = document.getElementById(containerId);
-        if (statsToggle && statsContainer) {
-          statsToggle.addEventListener('click', function() {
-            statsContainer.classList.toggle('expanded');
-            this.textContent = statsContainer.classList.contains('expanded') ? 
-              'HIDE GAME STATS ▲' : 'VIEW GAME STATS ▼';
-          });
-        }
-      }
-      async function fetchAndRenderPlayers() {
-        try {
-          const gameFetchPromises = Object.entries(gameCsvUrls).map(async ([gameNumber, url]) => {
-            try {
-              const response = await fetch(url);
-              if (!response.ok) throw new Error('Fetch failed');
-              const csvText = await response.text();
-              const rows = parseCsv(csvText);
-              const roundCell = rows[1]?.[22] || '';
-              const opponentCell = rows[6]?.[22] || '';
-              const round = roundCell.split(' ').pop();
-              const opponent = opponentCell;
-              return { gameNumber, rows, round, opponent, unavailable: false };
-            } catch (err) {
-              return { gameNumber, rows: [], round: '', opponent: '', unavailable: true };
-            }
-          });
-          const averagesPromise = fetch(averagesCsvUrl).then(r => r.text());
-          const [games, averagesCsvText] = await Promise.all([Promise.all(gameFetchPromises), averagesPromise]);
-          const averagesRows = parseCsv(averagesCsvText);
-          const playerRows = averagesRows.slice(2, 12);
-          let playersHtml = '';
-          for (let i = 0; i < playerRows.length; i++) {
-            const rowNumber = i + 3;
-            const playerData = playerRows[i];
-            const allGameStats = games.map(game => {
-              if (game.unavailable) {
-                return { round: game.round, opponent: game.opponent, playerStats: null, unavailable: true };
-              }
-              const gamePlayerRow = rowNumber - 1;
-              const playerStats = game.rows.length > gamePlayerRow ? game.rows[gamePlayerRow] : [];
-              return {
-                round: game.round,
-                opponent: game.opponent,
-                playerStats,
-                unavailable: false
-              };
-            });
-            playersHtml += createPlayerCard(playerData, rowNumber, allGameStats);
-          }
-          document.getElementById('players-container-roster').innerHTML = playersHtml;
-          for (let i = 1; i <= 10; i++) {
-            setupStatsToggle(`statsToggle${i}`, `statsContainer${i}`);
-          }
-        } catch (error) {
-          document.getElementById('players-container-roster').innerHTML = `
-            <div class="loading" style="color: #ff6b6b;">
-              Error loading player data. Please try again later.
-            </div>
-          `;
-        }
-      }
-      document.addEventListener('DOMContentLoaded', fetchAndRenderPlayers);
-    })();
+
     // --- BOXSCORER JS ---
     (function() {
       const gameSheetUrls = {
@@ -1226,8 +1043,7 @@
               "3pm": parseInt(row[14]) || 0,
               "3pa": parseInt(row[15]) || 0,
               ftm: parseInt(row[17]) || 0,
-              fta: parseInt(row[18]) || 0,
-		per: parseFloat(row[20]) || 0    
+              fta: parseInt(row[18]) || 0
             });
           }
           return { players, metadata };
@@ -1314,14 +1130,6 @@
             totals.fta += player.fta;
           }
         });
-	let perSum = 0, perCount = 0;
-players.forEach(player => {
-  if (!player.dnpReason) {
-    perSum += player.per || 0;
-    perCount++;
-  }
-});
-const avgPER = perCount > 0 ? (perSum / perCount).toFixed(1) : "0.0";      
         const fgPct = totals.fga > 0 ? (totals.fgm / totals.fga * 100).toFixed(1) : 0;
         const threePct = totals["3pa"] > 0 ? (totals["3pm"] / totals["3pa"] * 100).toFixed(1) : 0;
         const ftPct = totals.fta > 0 ? (totals.ftm / totals.fta * 100).toFixed(1) : 0;
@@ -1337,9 +1145,8 @@ const avgPER = perCount > 0 ? (perSum / perCount).toFixed(1) : "0.0";
                 <th data-key="stl" class="${sortConfig.key === 'stl' ? 'sort-' + sortConfig.direction : ''}">STL</th>
                 <th data-key="blk" class="${sortConfig.key === 'blk' ? 'sort-' + sortConfig.direction : ''}">BLK</th>
                 <th data-key="to" class="${sortConfig.key === 'to' ? 'sort-' + sortConfig.direction : ''}">TO</th>
-<th data-key="pf" class="${sortConfig.key === 'pf' ? 'sort-' + sortConfig.direction : ''}">PF</th>
-<th data-key="per" class="${sortConfig.key === 'per' ? 'sort-' + sortConfig.direction : ''}">PER</th>
-<th class="shot-column">FGM-A</th>
+                <th data-key="pf" class="${sortConfig.key === 'pf' ? 'sort-' + sortConfig.direction : ''}">PF</th>
+                <th class="shot-column">FGM-A</th>
                 <th>FG%</th>
                 <th class="shot-column">3PM-A</th>
                 <th>3P%</th>
@@ -1373,9 +1180,8 @@ const avgPER = perCount > 0 ? (perSum / perCount).toFixed(1) : "0.0";
                 <td>${player.stl}</td>
                 <td>${player.blk}</td>
                 <td>${player.to}</td>
-<td>${player.pf}</td>
-<td>${player.per ? player.per.toFixed(1) : "0.0"}</td>
-<td>${player.fgm}-${player.fga}</td>
+                <td>${player.pf}</td>
+                <td>${player.fgm}-${player.fga}</td>
                 <td>${playerFgPct}%</td>
                 <td>${player["3pm"]}-${player["3pa"]}</td>
                 <td>${playerThreePct}%</td>
@@ -1395,9 +1201,8 @@ const avgPER = perCount > 0 ? (perSum / perCount).toFixed(1) : "0.0";
               <td>${totals.stl}</td>
               <td>${totals.blk}</td>
               <td>${totals.to}</td>
-<td>${totals.pf}</td>
-<td>${avgPER}</td>
-<td>${totals.fgm}-${totals.fga}</td>
+              <td>${totals.pf}</td>
+              <td>${totals.fgm}-${totals.fga}</td>
               <td>${fgPct}%</td>
               <td>${totals["3pm"]}-${totals["3pa"]}</td>
               <td>${threePct}%</td>
