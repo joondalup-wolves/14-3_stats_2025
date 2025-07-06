@@ -1226,7 +1226,8 @@
               "3pm": parseInt(row[14]) || 0,
               "3pa": parseInt(row[15]) || 0,
               ftm: parseInt(row[17]) || 0,
-              fta: parseInt(row[18]) || 0
+              fta: parseInt(row[18]) || 0,
+		per: parseFloat(row[20]) || 0    
             });
           }
           return { players, metadata };
@@ -1313,6 +1314,14 @@
             totals.fta += player.fta;
           }
         });
+	let perSum = 0, perCount = 0;
+players.forEach(player => {
+  if (!player.dnpReason) {
+    perSum += player.per || 0;
+    perCount++;
+  }
+});
+const avgPER = perCount > 0 ? (perSum / perCount).toFixed(1) : "0.0";      
         const fgPct = totals.fga > 0 ? (totals.fgm / totals.fga * 100).toFixed(1) : 0;
         const threePct = totals["3pa"] > 0 ? (totals["3pm"] / totals["3pa"] * 100).toFixed(1) : 0;
         const ftPct = totals.fta > 0 ? (totals.ftm / totals.fta * 100).toFixed(1) : 0;
@@ -1328,8 +1337,9 @@
                 <th data-key="stl" class="${sortConfig.key === 'stl' ? 'sort-' + sortConfig.direction : ''}">STL</th>
                 <th data-key="blk" class="${sortConfig.key === 'blk' ? 'sort-' + sortConfig.direction : ''}">BLK</th>
                 <th data-key="to" class="${sortConfig.key === 'to' ? 'sort-' + sortConfig.direction : ''}">TO</th>
-                <th data-key="pf" class="${sortConfig.key === 'pf' ? 'sort-' + sortConfig.direction : ''}">PF</th>
-                <th class="shot-column">FGM-A</th>
+<th data-key="pf" class="${sortConfig.key === 'pf' ? 'sort-' + sortConfig.direction : ''}">PF</th>
+<th data-key="per" class="${sortConfig.key === 'per' ? 'sort-' + sortConfig.direction : ''}">PER</th>
+<th class="shot-column">FGM-A</th>
                 <th>FG%</th>
                 <th class="shot-column">3PM-A</th>
                 <th>3P%</th>
@@ -1363,8 +1373,9 @@
                 <td>${player.stl}</td>
                 <td>${player.blk}</td>
                 <td>${player.to}</td>
-                <td>${player.pf}</td>
-                <td>${player.fgm}-${player.fga}</td>
+<td>${player.pf}</td>
+<td>${player.per ? player.per.toFixed(1) : "0.0"}</td>
+<td>${player.fgm}-${player.fga}</td>
                 <td>${playerFgPct}%</td>
                 <td>${player["3pm"]}-${player["3pa"]}</td>
                 <td>${playerThreePct}%</td>
@@ -1384,8 +1395,9 @@
               <td>${totals.stl}</td>
               <td>${totals.blk}</td>
               <td>${totals.to}</td>
-              <td>${totals.pf}</td>
-              <td>${totals.fgm}-${totals.fga}</td>
+<td>${totals.pf}</td>
+<td>${avgPER}</td>
+<td>${totals.fgm}-${totals.fga}</td>
               <td>${fgPct}%</td>
               <td>${totals["3pm"]}-${totals["3pa"]}</td>
               <td>${threePct}%</td>
