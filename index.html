@@ -734,6 +734,10 @@
     #view-analytics .median-row .player-name {
       font-weight: 700 !important;
     }
+    .per-cell {
+      color: #164835 !important;
+      font-weight: 700;
+    }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -1024,23 +1028,24 @@
               });
               continue;
             }
-            players.push({
-              number: playerNumber,
-              name: row[1] || "",
-              pts: parseInt(row[2]) || 0,
-              reb: parseInt(row[5]) || 0,
-              ast: parseInt(row[6]) || 0,
-              stl: parseInt(row[7]) || 0,
-              blk: parseInt(row[8]) || 0,
-              to: parseInt(row[9]) || 0,
-              pf: parseInt(row[10]) || 0,
-              fgm: parseInt(row[11]) || 0,
-              fga: parseInt(row[12]) || 0,
-              "3pm": parseInt(row[14]) || 0,
-              "3pa": parseInt(row[15]) || 0,
-              ftm: parseInt(row[17]) || 0,
-              fta: parseInt(row[18]) || 0
-            });
+players.push({
+  number: playerNumber,
+  name: row[1] || "",
+  pts: parseInt(row[2]) || 0,
+  reb: parseInt(row[5]) || 0,
+  ast: parseInt(row[6]) || 0,
+  stl: parseInt(row[7]) || 0,
+  blk: parseInt(row[8]) || 0,
+  to: parseInt(row[9]) || 0,
+  pf: parseInt(row[10]) || 0,
+  fgm: parseInt(row[11]) || 0,
+  fga: parseInt(row[12]) || 0,
+  "3pm": parseInt(row[14]) || 0,
+  "3pa": parseInt(row[15]) || 0,
+  ftm: parseInt(row[17]) || 0,
+  fta: parseInt(row[18]) || 0,
+  per: (row[20] && row[20] !== "N/A") ? parseFloat(row[20]).toFixed(2) : "N/A"
+});
           }
           return { players, metadata };
         } catch (error) {
@@ -1148,6 +1153,7 @@
                 <th>3P%</th>
                 <th class="shot-column">FTM-A</th>
                 <th>FT%</th>
+				<th>PER</th>
               </tr>
             </thead>
             <tbody>
@@ -1183,6 +1189,7 @@
                 <td>${playerThreePct}%</td>
                 <td>${player.ftm}-${player.fta}</td>
                 <td>${playerFtPct}%</td>
+<td style="color:#164835; font-weight:700">${player.per}</td>
               </tr>
             `;
           }
