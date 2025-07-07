@@ -1583,12 +1583,11 @@ const statSuffixes = ["ppg", "rpg", "apg", "spg", "bpg"];
     // --- ANALYTICS JS ---
     (function() {
       const analyticsCsvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTx_Gj_jt5i_wvL07zSs48DPlE_CkkP49G6EnhYcLKKH3tJvn0r9pEOrIySkkc6TJ1dyGHSA2a5GbW7/pub?gid=711431833&single=true&output=csv";
-      function formatDecimal(num) { return num % 1 === 0 ? num.toFixed(1) : num.toFixed(1); }
-      function formatPercentage(num) {
-        if (isNaN(num)) return "0%";
-        const pct = num * 100;
-        return pct % 1 === 0 ? pct.toFixed(0) + "%" : pct.toFixed(1) + "%";
-      }
+      function formatDecimal(num) { return isNaN(num) ? "0.00" : num.toFixed(2); }
+function formatPercentage(num) {
+  if (isNaN(num)) return "0.00%";
+  return (num * 100).toFixed(2) + "%";
+}
       function calculateMedian(values) {
         if (values.length === 0) return 0;
         values.sort((a, b) => a - b);
