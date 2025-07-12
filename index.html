@@ -1614,17 +1614,17 @@ players.push({
     radarChart.update();
   };
 
-window.addEventListener('resize', function() {
-  const canvas = document.getElementById('radarChart');
-  const container = document.querySelector('.chart-wrapper');
-  if (canvas && container) {
-    canvas.width = container.offsetWidth - 2;
-    canvas.height = container.offsetWidth * 0.8;
-    if (radarChart) {
-      radarChart.update();
+  window.addEventListener('resize', function() {
+    const canvas = document.getElementById('radarChart');
+    const container = document.querySelector('.chart-wrapper');
+    if (canvas && container) {
+      canvas.width = container.offsetWidth - 2;
+      canvas.height = container.offsetWidth * 0.8;
+      if (radarChart) {
+        radarChart.update();
+      }
     }
-  }
-});
+  });
 
   document.addEventListener('DOMContentLoaded', fetchData);
 })();
