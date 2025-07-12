@@ -1511,7 +1511,7 @@ players.push({
       data: { labels, datasets },
       options: {
         responsive: true,
-        maintainAspectRatio: false,
+        maintainAspectRatio: true,
         plugins: { 
           legend: { display: false },
           tooltip: {
@@ -1614,17 +1614,7 @@ players.push({
     radarChart.update();
   };
 
-  window.addEventListener('resize', function() {
-    const canvas = document.getElementById('radarChart');
-    const container = document.querySelector('.chart-wrapper');
-    if (canvas && container) {
-      canvas.width = container.offsetWidth - 2;
-      canvas.height = container.offsetWidth * 0.8;
-      if (radarChart) {
-        radarChart.update();
-      }
-    }
-  });
+
 
   document.addEventListener('DOMContentLoaded', fetchData);
 })();
