@@ -831,7 +831,7 @@
       <label for="teamAvgCheckbox">Show Team Average</label>
     </div>
     <div class="chart-wrapper">
-      <canvas id="radarChart"></canvas>
+      <canvas id="radarChart" width="400" height="400"></canvas>
     </div>
   </div>
   <div id="loading" class="loading">Loading data...</div>
@@ -1510,8 +1510,8 @@ players.push({
       type: 'radar',
       data: { labels, datasets },
       options: {
-        responsive: true,
-        maintainAspectRatio: false,
+        responsive: false,
+        maintainAspectRatio: true,
         plugins: { 
           legend: { display: false },
           tooltip: {
@@ -1614,17 +1614,17 @@ players.push({
     radarChart.update();
   };
 
-  window.addEventListener('resize', function() {
-    const canvas = document.getElementById('radarChart');
-    const container = document.querySelector('.chart-wrapper');
-    if (canvas && container) {
-      canvas.width = container.offsetWidth - 2;
-      canvas.height = container.offsetWidth * 0.8;
-      if (radarChart) {
-        radarChart.update();
-      }
+window.addEventListener('resize', function() {
+  const canvas = document.getElementById('radarChart');
+  const container = document.querySelector('.chart-wrapper');
+  if (canvas && container) {
+    canvas.width = container.offsetWidth - 2;
+    canvas.height = container.offsetWidth * 0.8;
+    if (radarChart) {
+      radarChart.update();
     }
-  });
+  }
+});
 
   document.addEventListener('DOMContentLoaded', fetchData);
 })();
