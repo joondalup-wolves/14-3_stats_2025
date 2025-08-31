@@ -852,8 +852,9 @@
         <li data-round="13">ROUND 13 - Cockburn Cougars</li>
         <li data-round="14">ROUND 14 - Eastern Suns</li>
         <li data-round="15">ROUND 15 - SouthWest Slammers (Blue)</li>
-        <li data-round="16" class="current">ROUND 16 - Warwick Senators</li>
-        <li data-round="17" class="future">QUARTER FINAL - Eastern Suns</li>		  
+        <li data-round="16">ROUND 16 - Warwick Senators</li>
+        <li data-round="17" class="current">QUARTER FINAL - Eastern Suns</li>	
+        <li data-round="18" class="future">SEMI FINAL - SouthWest Slammers (Red)</li>		  
       </ul>
     </div>
   </div>
@@ -1073,10 +1074,11 @@
         13: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTx_Gj_jt5i_wvL07zSs48DPlE_CkkP49G6EnhYcLKKH3tJvn0r9pEOrIySkkc6TJ1dyGHSA2a5GbW7/pub?gid=1873389368&single=true&output=csv",
         14: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTx_Gj_jt5i_wvL07zSs48DPlE_CkkP49G6EnhYcLKKH3tJvn0r9pEOrIySkkc6TJ1dyGHSA2a5GbW7/pub?gid=1120402390&single=true&output=csv",
         15: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTx_Gj_jt5i_wvL07zSs48DPlE_CkkP49G6EnhYcLKKH3tJvn0r9pEOrIySkkc6TJ1dyGHSA2a5GbW7/pub?gid=954827242&single=true&output=csv",
-        16: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTx_Gj_jt5i_wvL07zSs48DPlE_CkkP49G6EnhYcLKKH3tJvn0r9pEOrIySkkc6TJ1dyGHSA2a5GbW7/pub?gid=405488937&single=true&output=csv"
+        16: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTx_Gj_jt5i_wvL07zSs48DPlE_CkkP49G6EnhYcLKKH3tJvn0r9pEOrIySkkc6TJ1dyGHSA2a5GbW7/pub?gid=405488937&single=true&output=csv",
+		17: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTx_Gj_jt5i_wvL07zSs48DPlE_CkkP49G6EnhYcLKKH3tJvn0r9pEOrIySkkc6TJ1dyGHSA2a5GbW7/pub?gid=2135722273&single=true&output=csv"  
       };
       const seasonData = {};
-      let currentGame = 16;
+      let currentGame = 17;
       let sortConfig = { key: null, direction: 'desc' };
       async function fetchLiveStats(round) {
         const csvUrl = gameSheetUrls[round];
